@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bbm-admin-deployment
+  labels:
+    app: bbm-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bbm-admin
+  template:
+    metadata:
+      labels:
+        app: bbm-admin
+    spec:
+      containers:
+      - name: bbm-admin
+        image: bbm-admin:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: ADMIN_BBM_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: bbm-admin-secret
+              key: ADMIN_BBM_USERNAME
+        - name: ADMIN_BBM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bbm-admin-secret
+              key: ADMIN_BBM_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bbm-admin-service
+spec:
+  selector:
+    app.kubernetes.io/name: bbm-admin
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

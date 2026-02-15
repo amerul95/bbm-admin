@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id        String   @id
+  email     String   @unique
+  password  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@map("User")
+}
+
+model Job {
+  id             Int              @id @default(autoincrement())
+  title          String
+  jobDescription String
+  jobType        String
+  location       String
+  salary         Int
+  postedDate     DateTime         @default(now())
+  jobStatus      String           @default("published")
+  jobTime        String
+  active         Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  applications   JobApplication[]
+}
+
+model JobApplication {
+  id             Int      @id @default(autoincrement())
+  jobId          Int
+  applicantName  String
+  applicantEmail String
+  applicantPhone String?
+  resumeUrl      String?
+  coverLetter    String?
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  job            Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+}
+
+model Album {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  coverUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      Image[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  albumId   String?
+  url       String
+  path      String
+  filename  String
+  size      Int?
+  mimeType  String?
+  createdAt DateTime @default(now())
+  album     Album?   @relation(fields: [albumId], references: [id])
+
+  @@index([albumId])
+}

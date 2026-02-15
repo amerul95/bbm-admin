@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: polygots/bbm-admin:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: ADMIN_BBM_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: bbm-admin-secret
+              key: ADMIN_BBM_USERNAME
+        - name: ADMIN_BBM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bbm-admin-secret
+              key: ADMIN_BBM_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: webapp
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000
