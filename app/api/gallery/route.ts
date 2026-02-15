@@ -12,16 +12,20 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const albumId = searchParams.get("albumId")
+    const limit = searchParams.get("limit")
+    const take = limit ? Math.min(parseInt(limit, 10) || 100, 100) : undefined
 
     if (albumId) {
       const images = await prisma.image.findMany({
         where: { albumId },
+        take,
         orderBy: { createdAt: "desc" },
       })
       return NextResponse.json(images)
     }
 
     const images = await prisma.image.findMany({
+      take,
       orderBy: { createdAt: "desc" },
     })
     return NextResponse.json(images)

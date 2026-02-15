@@ -1,35 +1,38 @@
+import { headers } from "next/headers"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { SectionCards } from "@/components/section-cards"
 import SectionCard from "@/components/dashboard/sectionCard"
-import { getJobs } from "@/lib/jobs"
-import { prisma } from "@/lib/prisma"
+import { getBaseUrl } from "@/lib/api"
 import type { Jobs } from "@/components/jobs/columns"
 
 const LIST_LIMIT = 5
 
-async function getData(): Promise<Jobs[]> {
-  try {
-    const jobs = await getJobs()
-    return jobs as unknown as Jobs[]
-  } catch (error) {
-    console.error("Error fetching jobs:", error)
-    return []
-  }
+async function fetchDashboardData() {
+  const headersList = await headers()
+  const cookie = headersList.get("cookie") ?? ""
+  const baseUrl = getBaseUrl()
+
+  const [jobsRes, albumsRes, imagesRes] = await Promise.all([
+    fetch(`${baseUrl}/api/jobs?limit=${LIST_LIMIT}`, { headers: { cookie } }),
+    fetch(`${baseUrl}/api/albums?limit=${LIST_LIMIT}&summary=true`, {
+      headers: { cookie },
+    }),
+    fetch(`${baseUrl}/api/gallery?limit=${LIST_LIMIT}`, { headers: { cookie } }),
+  ])
+
+  const jobs: Jobs[] = jobsRes.ok ? await jobsRes.json() : []
+  const albums = albumsRes.ok
+    ? await albumsRes.json()
+    : []
+  const images = imagesRes.ok
+    ? await imagesRes.json()
+    : []
+
+  return { jobs, albums, images }
 }
 
 export default async function Page() {
-  const [jobs, albums, images] = await Promise.all([
-    getData(),
-    prisma.album.findMany({
-      take: LIST_LIMIT,
-      orderBy: { createdAt: "desc" },
-      include: { _count: { select: { images: true } } },
-    }),
-    prisma.image.findMany({
-      take: LIST_LIMIT,
-      orderBy: { createdAt: "desc" },
-    }),
-  ])
+  const { jobs, albums, images } = await fetchDashboardData()
 
   return (
     <div className="flex flex-1 flex-col ">
@@ -43,7 +46,10 @@ export default async function Page() {
             <SectionCard
               jobs={jobs.map((j) => ({ id: j.id, title: j.title }))}
               albums={albums}
-              images={images.map((img) => ({ id: img.id, filename: img.filename }))}
+              images={images.map((img: { id: string; filename: string }) => ({
+                id: img.id,
+                filename: img.filename,
+              }))}
               listLimit={LIST_LIMIT}
             />
           </div>

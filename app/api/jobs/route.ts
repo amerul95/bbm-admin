@@ -4,20 +4,24 @@ import { createJobSchema } from "@/lib/schema/schema"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/auth"
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { searchParams } = new URL(req.url)
+    const limit = searchParams.get("limit")
+    const take = limit ? Math.min(parseInt(limit, 10) || 100, 100) : undefined
+
     const jobs = await prisma.job.findMany({
+      take,
       include: {
         _count: { select: { applications: true } },
       },
       orderBy: { createdAt: "desc" },
     })
-    console.log(jobs);
     return NextResponse.json(jobs, { status: 200 })
   } catch (error) {
     console.error("Error fetching jobs:", error)

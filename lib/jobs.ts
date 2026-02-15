@@ -5,7 +5,6 @@ export async function getJobs() {
     include: { _count: { select: { applications: true } } },
     orderBy: { createdAt: "desc" },
   })
-  console.log(jobs);  
   return jobs;
 
 }

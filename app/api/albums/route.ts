@@ -9,15 +9,23 @@ const createAlbumSchema = z.object({
   description: z.string().optional(),
 })
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const limit = searchParams.get("limit")
+    const take = limit ? Math.min(parseInt(limit, 10) || 100, 100) : undefined
+    const summary = searchParams.get("summary") === "true"
+
     const albums = await prisma.album.findMany({
-      include: { images: true },
+      take,
+      include: summary
+        ? { _count: { select: { images: true } } }
+        : { images: true },
       orderBy: { createdAt: "desc" },
     })
     return NextResponse.json(albums, { status: 200 })
