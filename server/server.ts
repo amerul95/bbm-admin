@@ -13,8 +13,10 @@ export async function getUserdb(
         return { user: null, isValid: false }
     }
 
-    // Debug logging (only in development)
-    if (process.env.NODE_ENV !== "production") {
+    // Debug logging (always log in development, log failures in production)
+    const isDev = process.env.NODE_ENV !== "production"
+    
+    if (isDev) {
       console.log("🔐 Password check:", {
         email,
         passwordLength: password.length,
@@ -26,11 +28,12 @@ export async function getUserdb(
     
     const isValid = await bcrypt.compare(password, user.password)
     
-    // Only log failures in production (for debugging), never log passwords
-    if (!isValid && process.env.NODE_ENV === "production") {
-      console.log("❌ Authentication failed for:", email)
-    } else if (process.env.NODE_ENV !== "production") {
+    // Log results
+    if (isDev) {
       console.log("✅ Password match:", isValid)
+    } else if (!isValid) {
+      // Log failures in production for debugging
+      console.log("❌ Authentication failed for:", email)
     }
     
     if (!isValid) return { user: null, isValid: false }
