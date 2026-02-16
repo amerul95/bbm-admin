@@ -67,7 +67,6 @@ export default function EditJobs({ job }: Props) {
         router.push("/dashboard/job-postings")
         router.refresh()
       } catch (error) {
-        console.error("Error updating job:", error)
         toast.error("Failed to update job")
       }
     },

@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
     })
     return NextResponse.json(albums, { status: 200 })
   } catch (error) {
-    console.error("Error fetching albums:", error)
     return NextResponse.json(
       { error: "Failed to fetch albums" },
       { status: 500 }
@@ -59,7 +58,6 @@ export async function POST(req: NextRequest) {
     })
     return NextResponse.json(album, { status: 201 })
   } catch (error) {
-    console.error("Error creating album:", error)
     return NextResponse.json(
       { error: "Failed to create album" },
       { status: 500 }

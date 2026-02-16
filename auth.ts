@@ -4,10 +4,6 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 
 const authSecret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
 
-if (!authSecret && process.env.NODE_ENV === "production") {
-  console.error("⚠️  AUTH_SECRET is not set! Authentication will fail in production.");
-}
-
 export const authOptions: NextAuthOptions = {
   secret: authSecret,
   providers: [
@@ -28,9 +24,6 @@ export const authOptions: NextAuthOptions = {
         }
         
         const result = await getUserdb(email, password);
-        
-        // Log isValid in auth.ts
-        console.log("🔑 Auth result:", { email, isValid: result.isValid });
 
         if (result.user && result.isValid) {
           return { id: result.user.id, email: result.user.email, name: result.user.email };

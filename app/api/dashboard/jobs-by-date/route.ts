@@ -37,7 +37,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error("Error fetching jobs by date:", error)
     return NextResponse.json(
       { error: "Failed to fetch jobs by date" },
       { status: 500 }

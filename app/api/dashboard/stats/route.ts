@@ -26,7 +26,6 @@ export async function GET() {
       closedJobs,
     });
   } catch (error) {
-    console.error("Error fetching dashboard stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch stats" },
       { status: 500 }

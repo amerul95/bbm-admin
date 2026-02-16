@@ -35,7 +35,6 @@ export async function PATCH(
 
     return NextResponse.json(admin)
   } catch (error) {
-    console.error("Update admin status error:", error)
     return NextResponse.json(
       { error: "Failed to update admin status" },
       { status: 500 }

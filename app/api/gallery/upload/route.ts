@@ -46,7 +46,6 @@ export async function POST(request: Request) {
         })
 
       if (uploadError) {
-        console.error("Supabase upload error:", uploadError)
         return NextResponse.json(
           { error: "Failed to upload image", details: uploadError.message },
           { status: 500 }
@@ -80,7 +79,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(image, { status: 201 })
   } catch (error) {
-    console.error("Error uploading image:", error)
     return NextResponse.json(
       { error: "Failed to upload image" },
       { status: 500 }

@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(admin, { status: 201 })
   } catch (error) {
-    console.error("Create admin error:", error)
     return NextResponse.json(
       { error: "Failed to create admin" },
       { status: 500 }
@@ -80,7 +79,6 @@ export async function GET() {
 
     return NextResponse.json(admins)
   } catch (error) {
-    console.error("List admins error:", error)
     return NextResponse.json(
       { error: "Failed to list admins" },
       { status: 500 }

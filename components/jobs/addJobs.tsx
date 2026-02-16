@@ -96,7 +96,6 @@ export default function AddJobs() {
             router.push("/dashboard/job-postings")
             router.refresh()
           } catch (error) {
-            console.error("Error creating job:", error)
             toast.error("An error occurred while creating the job")
           }
         },

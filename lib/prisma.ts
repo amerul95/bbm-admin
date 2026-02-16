@@ -11,10 +11,6 @@ if (!process.env.DATABASE_URL) {
 // Parse and normalize connection string
 let connectionString = process.env.DATABASE_URL
 
-// Debug: Log the connection string (hide password)
-const maskedUrl = connectionString.replace(/:[^:@]+@/, ":****@")
-console.log("🔌 Using DATABASE_URL:", maskedUrl)
-console.log("🔌 Environment:", process.env.NODE_ENV || "development")
 
 // Fix double question marks (should use & for additional params)
 if (connectionString.includes("??")) {
@@ -43,29 +39,16 @@ if (!connectionString.includes("sslmode=")) {
   connectionString = connectionString.replace("sslmode=", "uselibpqcompat=true&sslmode=")
 }
 
-// Debug: Show what connection string will be used
-const finalMaskedUrl = connectionString.replace(/:[^:@]+@/, ":****@")
-console.log("🔌 Final connection string:", finalMaskedUrl)
-console.log("🔌 Host:", connectionString.match(/@([^:/]+)/)?.[1] || "unknown")
-console.log("🔌 Has pgbouncer:", connectionString.includes("pgbouncer=true"))
-console.log("🔌 Has SSL:", connectionString.includes("sslmode="))
 
-let adapter: PrismaPg
-try {
-  adapter = new PrismaPg({
-    connectionString: connectionString,
-  })
-} catch (error) {
-  console.error("❌ Failed to create Prisma adapter:", error)
-  throw error
-}
+const adapter = new PrismaPg({
+  connectionString: connectionString,
+})
 
 // Clear cached Prisma client if DATABASE_URL changed (for development)
 if (process.env.NODE_ENV !== "production" && globalForPrisma.prisma) {
   // Force recreate if connection string changed
   const cachedUrl = (globalForPrisma.prisma as any).__internal?.connectionString
   if (cachedUrl && cachedUrl !== connectionString) {
-    console.log("🔄 DATABASE_URL changed, clearing cached Prisma client")
     delete globalForPrisma.prisma
   }
 }

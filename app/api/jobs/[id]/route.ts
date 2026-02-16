@@ -34,7 +34,6 @@ export async function GET(
     }
     return NextResponse.json(job)
   } catch (error) {
-    console.error("Error fetching job:", error)
     return NextResponse.json(
       { error: "Failed to fetch job" },
       { status: 500 }
@@ -73,7 +72,6 @@ export async function PATCH(
     })
     return NextResponse.json(job, { status: 200 })
   } catch (error) {
-    console.error("Error updating job:", error)
     return NextResponse.json(
       { error: "Failed to update job" },
       { status: 500 }
@@ -100,7 +98,6 @@ export async function DELETE(
     await prisma.job.delete({ where: { id: parsed } })
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting job:", error)
     return NextResponse.json(
       { error: "Failed to delete job" },
       { status: 500 }
