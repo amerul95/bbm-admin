@@ -126,6 +126,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Demo Access
+
+Use these credentials to access the demo:
+
+- **Email:** `test@test.com`
+- **Password:** `Senario@123`
+
 ### Build
 
 ```bash
